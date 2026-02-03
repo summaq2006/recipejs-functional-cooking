@@ -68,16 +68,40 @@ const recipes = [
     category: "vegetable"
   }
 ];
+let currentFilter = "all";
+let currentSort = "none";
 
 // ==============================
 // DOM Selection
 // ==============================
 
 const recipeContainer = document.querySelector("#recipe-container");
+const filterRecipes = (recipes, filter) => {
+  switch (filter) {
+    case "easy":
+      return recipes.filter(recipe => recipe.difficulty === "easy");
+    case "medium":
+      return recipes.filter(recipe => recipe.difficulty === "medium");
+    case "hard":
+      return recipes.filter(recipe => recipe.difficulty === "hard");
+    case "quick":
+      return recipes.filter(recipe => recipe.time < 30);
+    default:
+      return recipes;
+  }
+};
+const sortRecipes = (recipes, sortType) => {
+  const sorted = [...recipes]; // copy to avoid mutation
 
-// ==============================
-// Create Recipe Card
-// ==============================
+  switch (sortType) {
+    case "name":
+      return sorted.sort((a, b) => a.title.localeCompare(b.title));
+    case "time":
+      return sorted.sort((a, b) => a.time - b.time);
+    default:
+      return sorted;
+  }
+};
 
 const createRecipeCard = (recipe) => {
   return `
@@ -94,9 +118,6 @@ const createRecipeCard = (recipe) => {
   `;
 };
 
-// ==============================
-// Render Recipes
-// ==============================
 
 const renderRecipes = (recipeList) => {
   const recipeHTML = recipeList
@@ -109,5 +130,26 @@ const renderRecipes = (recipeList) => {
 // ==============================
 // Initialize App
 // ==============================
+const updateDisplay = () => {
+  const filtered = filterRecipes(recipes, currentFilter);
+  const sorted = sortRecipes(filtered, currentSort);
+  renderRecipes(sorted);
+};
+document.querySelectorAll("[data-filter]").forEach(button => {
+  button.addEventListener("click", () => {
+    currentFilter = button.dataset.filter;
+    updateDisplay();
+  });
+});
 
-renderRecipes(recipes);
+// Sort buttons
+document.querySelectorAll("[data-sort]").forEach(button => {
+  button.addEventListener("click", () => {
+    currentSort = button.dataset.sort;
+    updateDisplay();
+  });
+});
+//renderRecipes(recipes);
+updateDisplay();
+
+
