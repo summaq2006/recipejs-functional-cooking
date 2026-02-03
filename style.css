@@ -136,3 +136,30 @@ main {
 .controls button.active {
   background-color: #333;
 }
+.recipe-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.recipe-actions button {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.recipe-details {
+  margin-top: 1rem;
+}
+
+.recipe-details h4 {
+  margin-bottom: 0.5rem;
+}
+
+.hidden {
+  display: none;
+}

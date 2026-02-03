@@ -1,23 +1,64 @@
 // ==============================
 // Recipe Data (Static Array)
 // ==============================
-
+(() => {
 const recipes = [
   {
-    id: 1,
-    title: "Spaghetti Aglio e Olio",
-    time: 25,
-    difficulty: "easy",
-    description: "A simple Italian pasta made with garlic, olive oil, and chili flakes.",
-    category: "pasta"
+  id: 1,
+  title: "Spaghetti Aglio e Olio",
+  time: 25,
+  difficulty: "easy",
+  description: "A simple Italian pasta made with garlic, olive oil, and chili flakes.",
+  category: "pasta",
+  ingredients: [
+    "Spaghetti",
+    "Garlic",
+    "Olive oil",
+    "Chili flakes",
+    "Salt"
+  ],
+  steps: [
+    "Boil water and cook spaghetti",
+    [
+      "Heat olive oil",
+      "Add garlic",
+      "Add chili flakes"
+    ],
+    "Mix pasta with sauce",
+    "Serve hot"
+  ]
   },
-  {
-    id: 2,
-    title: "Greek Salad",
-    time: 15,
-    difficulty: "easy",
-    description: "A fresh salad with tomatoes, cucumbers, olives, and feta cheese.",
-    category: "salad"
+ {
+  id: 2,
+  title: "Greek Salad",
+  time: 15,
+  difficulty: "easy",
+  description: "A fresh salad with tomatoes, cucumbers, olives, and feta cheese.",
+  category: "salad",
+  ingredients: [
+    "Tomatoes",
+    "Cucumbers",
+    "Onion",
+    "Olives",
+    "Feta cheese",
+    "Olive oil",
+    "Salt",
+    "Pepper"
+  ],
+  steps: [
+    "Wash all vegetables",
+    [
+      "Chop tomatoes",
+      "Slice cucumbers",
+      "Cut onions thinly"
+    ],
+    "Add olives and feta cheese",
+    [
+      "Drizzle olive oil",
+      "Season with salt and pepper"
+    ],
+    "Mix gently and serve fresh"
+  ]
   },
   {
     id: 3,
@@ -67,6 +108,7 @@ const recipes = [
     description: "Quick stir-fried vegetables with light seasoning.",
     category: "vegetable"
   }
+
 ];
 let currentFilter = "all";
 let currentSort = "none";
@@ -107,24 +149,76 @@ const createRecipeCard = (recipe) => {
   return `
     <div class="recipe-card" data-id="${recipe.id}">
       <h3>${recipe.title}</h3>
+
       <div class="recipe-meta">
         <span>⏱️ ${recipe.time} min</span>
         <span class="difficulty ${recipe.difficulty}">
           ${recipe.difficulty}
         </span>
       </div>
+
       <p>${recipe.description}</p>
+
+      <div class="recipe-actions">
+        <button class="toggle-ingredients">Show Ingredients</button>
+        <button class="toggle-steps">Show Steps</button>
+      </div>
+
+      <div class="recipe-details ingredients hidden">
+        <h4>Ingredients</h4>
+        <ul></ul>
+      </div>
+
+      <div class="recipe-details steps hidden">
+        <h4>Steps</h4>
+        <ol></ol>
+      </div>
     </div>
   `;
 };
 
 
+
 const renderRecipes = (recipeList) => {
   const recipeHTML = recipeList
-    .map(createRecipeCard)
+    .map(recipe => {
+      const cardHTML = createRecipeCard(recipe);
+      return cardHTML;
+    })
     .join("");
 
   recipeContainer.innerHTML = recipeHTML;
+
+  // Populate ingredients and steps
+  recipeList.forEach(recipe => {
+    const card = recipeContainer.querySelector(
+      `.recipe-card[data-id="${recipe.id}"]`
+    );
+
+    if (!card) return;
+
+    // Ingredients
+    const ingredientsList = card.querySelector(".ingredients ul");
+    if (recipe.ingredients && ingredientsList) {
+      ingredientsList.innerHTML = recipe.ingredients
+        .map(item => `<li>${item}</li>`)
+        .join("");
+    }
+
+    // Steps (recursive)
+    const stepsList = card.querySelector(".steps ol");
+    if (recipe.steps && stepsList) {
+      stepsList.innerHTML = renderSteps(recipe.steps);
+    }
+  });
+};
+const renderSteps = (steps) => {
+  return steps.map(step => {
+    if (Array.isArray(step)) {
+      return `<ol>${renderSteps(step)}</ol>`;
+    }
+    return `<li>${step}</li>`;
+  }).join("");
 };
 
 // ==============================
@@ -134,6 +228,9 @@ const updateDisplay = () => {
   const filtered = filterRecipes(recipes, currentFilter);
   const sorted = sortRecipes(filtered, currentSort);
   renderRecipes(sorted);
+};
+const init = () => {
+  updateDisplay();
 };
 document.querySelectorAll("[data-filter]").forEach(button => {
   button.addEventListener("click", () => {
@@ -150,6 +247,32 @@ document.querySelectorAll("[data-sort]").forEach(button => {
   });
 });
 //renderRecipes(recipes);
-updateDisplay();
+recipeContainer.addEventListener("click", (event) => {
+  const target = event.target;
 
+  // Toggle Ingredients
+  if (target.classList.contains("toggle-ingredients")) {
+    const card = target.closest(".recipe-card");
+    const ingredientsSection = card.querySelector(".ingredients");
+
+    ingredientsSection.classList.toggle("hidden");
+    target.textContent = ingredientsSection.classList.contains("hidden")
+      ? "Show Ingredients"
+      : "Hide Ingredients";
+  }
+
+  // Toggle Steps
+  if (target.classList.contains("toggle-steps")) {
+    const card = target.closest(".recipe-card");
+    const stepsSection = card.querySelector(".steps");
+
+    stepsSection.classList.toggle("hidden");
+    target.textContent = stepsSection.classList.contains("hidden")
+      ? "Show Steps"
+      : "Hide Steps";
+  }
+});
+
+init();
+})();
 
