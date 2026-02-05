@@ -9,7 +9,7 @@
 <body>
 
   <header>
-    <h1>🍳 RecipeJS</h1>
+    <h1> RecipeJS</h1>
     <p>Your Functional Cooking Companion</p>
   </header>
 
@@ -28,6 +28,23 @@
     <button data-sort="time">Time (Fastest)</button>
   </div>
 </section>
+
+<div class="extra-controls">
+
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="Search recipes..."
+  />
+
+  <label>
+    <input type="checkbox" id="favoritesOnly" />
+    Favorites Only
+  </label>
+
+  <p id="recipeCounter"></p>
+
+</div>
 
     <div id="recipe-container">
       <!-- Recipe cards will be rendered here by JavaScript -->
